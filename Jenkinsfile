@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         LABS = credentials('labcreds')
-        JAVA_HOME = '/opt/bitnami/java' // Set your JAVA_HOME path here.
+        JAVA_HOME = '/usr/lib/jvm/java-21-openjdk-amd64' // Set your JAVA_HOME path here.
         PATH = "${env.JAVA_HOME}/bin:${env.PATH}" // Add Java binaries to PATH
     }
     stages {
