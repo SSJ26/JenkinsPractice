@@ -42,6 +42,15 @@ pipeline {
                 sh 'zip -r retailproject.zip . -x "retail_pipeline_venv/*"'
             }
         }
+        stage('Verify Package'){
+            steps{
+                sh """
+                    ls -lh retailproject.zip
+                    file retailproject.zip
+                    unzip -t retailproject.zip
+                    """
+            }
+        }
         stage('Deploy') {
             steps {
                 // Add deployment steps here (e.g., deploy to a server or cloud)
