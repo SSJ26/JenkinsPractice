@@ -1,9 +1,8 @@
 pipeline {
     agent any
     environment {
-        LABS = credentials('labcreds')
-        JAVA_HOME = '/usr/lib/jvm/java-21-openjdk-amd64' // Set your JAVA_HOME path here.
-        PATH = "${env.JAVA_HOME}/bin:${env.PATH}" // Add Java binaries to PATH
+        JAVA_HOME = '/usr/lib/jvm/java-21-openjdk-amd64'
+        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
     stages {
         stage('Setup Virtual Environment') {
@@ -22,26 +21,23 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install your project dependencies (e.g., requirements.txt or Pipfile)
-                    sh './retail_pipeline_venv/bin/pipenv install'
+                    sh './retail_pipeline_venv/bin/pipenv install --python python3'
                 }
             }
         }
         stage('Test') {
             steps {
                 script {
-                    // Ensure JAVA_HOME is set for PySpark to work
                     sh 'echo $JAVA_HOME'
                     sh 'echo $PATH'
-                    // Run tests (assuming you are using pytest for tests)
                     sh './retail_pipeline_venv/bin/pipenv run pytest'
                 }
             }
         }
         stage('Package') {
             steps {
-                // Create the zip file but exclude the venv directory
-                sh 'zip -r retailproject.zip . -x "retail_pipeline_venv/*"'
+                sh 'rm -f retailproject.zip'
+                sh 'zip -r retailproject.zip . -x "retail_pipeline_venv/*" -x "*.zip"'
             }
         }
         stage('Deploy') {
@@ -59,5 +55,16 @@ pipeline {
                 }
             }
         }
-    }    
+    }
+    post {
+        success {
+            echo "Pipeline succeeded - retailproject.zip deployed to g01.itversity.com"
+        }
+        failure {
+            echo "Pipeline FAILED - check the red stage above in console output"
+        }
+        always {
+            sh 'rm -f retailproject.zip'
+        }
+    }
 }
