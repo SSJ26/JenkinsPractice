@@ -46,17 +46,18 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                // Add deployment steps here (e.g., deploy to a server or cloud)
-                sh '''
-                    sshpass -p "$LABS_PSW" ssh -o StrictHostKeyChecking=no \
-                    $LABS_USR@g01.itversity.com \
-                    "mkdir -p /home/$LABS_USR/retailproject"
+                sshagent(credentials: ['deploy-ssh-key']) {
+                    sh '''
+                        set -e
 
-                    sshpass -p "$LABS_PSW" scp -o StrictHostKeyChecking=no \
-                    retailproject.zip \
-                    $LABS_USR@g01.itversity.com:/home/$LABS_USR/retailproject/
+                        ssh itv025741@g01.itversity.com \
+                            "mkdir -p /home/itv025741/retailproject"
+
+                        scp retailproject.zip \
+                            itv025741@g01.itversity.com:/home/itv025741/retailproject/
                     '''
                 }
+            }
         }
-    }
+    }    
 }
