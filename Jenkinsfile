@@ -9,11 +9,13 @@ pipeline {
         stage('Setup Virtual Environment') {
             steps {
                 script {
-                    // Create a virtual environment with the project name (Retail pipeline)
-                    sh 'python3 -m venv retail_pipeline_venv'
-                    // Upgrade pip and install pipenv in the virtual environment
-                    sh './retail_pipeline_venv/bin/pip install --upgrade pip'
-                    sh './retail_pipeline_venv/bin/pip install pipenv'
+                    sh '''
+                        if [ ! -d "retail_pipeline_venv" ]; then
+                            python3 -m venv retail_pipeline_venv
+                            ./retail_pipeline_venv/bin/pip install --upgrade pip
+                            ./retail_pipeline_venv/bin/pip install pipenv
+                        fi
+                    '''
                 }
             }
         }
